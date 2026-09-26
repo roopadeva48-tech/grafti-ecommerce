@@ -171,7 +171,7 @@ class _AuthScreenState extends State<AuthScreen>
                                 Center(
                                   child: Image.asset(
                                     'assets/logo.png',
-                                    height: 42,
+                                    height: 64,
                                     fit: BoxFit.contain,
                                     errorBuilder: (context, error, stackTrace) =>
                                         const Text(

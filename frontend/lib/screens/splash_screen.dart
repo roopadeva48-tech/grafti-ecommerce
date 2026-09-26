@@ -35,11 +35,22 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 1600),
     );
 
-    // Lid flies up
-    _lidOffset = Tween<double>(begin: 0.0, end: -40.0).animate(
+    // Lid gentle bounce & settle
+    _lidOffset = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.0, end: -6.0)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 40,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: -6.0, end: 0.0)
+            .chain(CurveTween(curve: Curves.easeInCubic)),
+        weight: 60,
+      ),
+    ]).animate(
       CurvedAnimation(
         parent: _introController,
-        curve: const Interval(0.0, 0.55, curve: Curves.easeOutBack),
+        curve: const Interval(0.0, 0.55),
       ),
     );
 
@@ -191,153 +202,158 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Animated Gift Box Icon
+                        // Animated Gift Box Icon (Reduced size & perfectly aligned)
                         AnimatedBuilder(
                           animation: Listenable.merge([_introController, _floatController]),
                           builder: (context, child) {
                             return Transform.translate(
                               offset: Offset(0, _floatAnim.value),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                clipBehavior: Clip.none,
-                                children: [
-                                  // Background soft pulse bubble
-                                  Transform.scale(
-                                    scale: _ribbonScale.value,
-                                    child: Container(
-                                      width: 110,
-                                      height: 110,
-                                      decoration: BoxDecoration(
-                                        color: GraftiTheme.secondaryPastelPink
-                                            .withValues(alpha: 0.85),
-                                        shape: BoxShape.circle,
+                              child: SizedBox(
+                                width: 84,
+                                height: 84,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    // Background soft pulse bubble
+                                    Transform.scale(
+                                      scale: _ribbonScale.value,
+                                      child: Container(
+                                        width: 84,
+                                        height: 84,
+                                        decoration: BoxDecoration(
+                                          color: GraftiTheme.secondaryPastelPink
+                                              .withValues(alpha: 0.9),
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
                                     ),
-                                  ),
 
-                                  // Gift Box Body
-                                  Transform(
-                                    alignment: Alignment.bottomCenter,
-                                    transform: Matrix4.identity()
-                                      ..setEntry(3, 2, 0.001)
-                                      ..rotateZ(math.sin(_introController.value * math.pi * 3) *
-                                          0.03 *
-                                          (1 - _introController.value)),
-                                    child: Container(
-                                      width: 68,
-                                      height: 68,
-                                      decoration: BoxDecoration(
-                                        color: GraftiTheme.primaryPink,
-                                        borderRadius: const BorderRadius.vertical(
-                                          bottom: Radius.circular(14),
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: GraftiTheme.primaryPink
-                                                .withValues(alpha: 0.25),
-                                            blurRadius: 12,
-                                            offset: const Offset(0, 4),
+                                    // Unified Gift Box
+                                    Positioned(
+                                      bottom: 15,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Gift Box Lid with Bow
+                                          Transform.translate(
+                                            offset: Offset(0, _lidOffset.value),
+                                            child: Stack(
+                                              clipBehavior: Clip.none,
+                                              alignment: Alignment.center,
+                                              children: [
+                                                // Lid Base
+                                                Container(
+                                                  width: 52,
+                                                  height: 12,
+                                                  decoration: BoxDecoration(
+                                                    color: GraftiTheme.primaryPink,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: GraftiTheme.primaryPink
+                                                            .withValues(alpha: 0.15),
+                                                        blurRadius: 4,
+                                                        offset: const Offset(0, 1),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: Center(
+                                                    child: Container(
+                                                      width: 10,
+                                                      height: 12,
+                                                      color: GraftiTheme.secondaryPastelPink,
+                                                    ),
+                                                  ),
+                                                ),
+                                                // Bow loops
+                                                Positioned(
+                                                  top: -6,
+                                                  left: 14,
+                                                  child: Transform.rotate(
+                                                    angle: -math.pi / 4,
+                                                    child: Container(
+                                                      width: 11,
+                                                      height: 7,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color: GraftiTheme.secondaryPastelPink,
+                                                          width: 2.2,
+                                                        ),
+                                                        borderRadius: BorderRadius.circular(4),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  top: -6,
+                                                  right: 14,
+                                                  child: Transform.rotate(
+                                                    angle: math.pi / 4,
+                                                    child: Container(
+                                                      width: 11,
+                                                      height: 7,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color: GraftiTheme.secondaryPastelPink,
+                                                          width: 2.2,
+                                                        ),
+                                                        borderRadius: BorderRadius.circular(4),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // Subtle 1px seam
+                                          const SizedBox(height: 1),
+
+                                          // Gift Box Body
+                                          Container(
+                                            width: 44,
+                                            height: 36,
+                                            decoration: BoxDecoration(
+                                              color: GraftiTheme.primaryPink,
+                                              borderRadius: const BorderRadius.vertical(
+                                                bottom: Radius.circular(10),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: GraftiTheme.primaryPink
+                                                      .withValues(alpha: 0.2),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 3),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Center(
+                                              child: Stack(
+                                                children: [
+                                                  Center(
+                                                    child: Container(
+                                                      width: 10,
+                                                      height: 36,
+                                                      color: GraftiTheme.secondaryPastelPink,
+                                                    ),
+                                                  ),
+                                                  Center(
+                                                    child: Container(
+                                                      width: 44,
+                                                      height: 10,
+                                                      color: GraftiTheme.secondaryPastelPink,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),
-                                      child: Center(
-                                        child: Stack(
-                                          children: [
-                                            Center(
-                                              child: Container(
-                                                width: 14,
-                                                height: 68,
-                                                color: GraftiTheme.secondaryPastelPink,
-                                              ),
-                                            ),
-                                            Center(
-                                              child: Container(
-                                                width: 68,
-                                                height: 14,
-                                                color: GraftiTheme.secondaryPastelPink,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
                                     ),
-                                  ),
-
-                                  // Gift Box Lid (Flipping upwards)
-                                  Positioned(
-                                    top: -10,
-                                    child: Transform.translate(
-                                      offset: Offset(0, _lidOffset.value),
-                                      child: Container(
-                                        width: 76,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          color: GraftiTheme.primaryPink,
-                                          borderRadius: BorderRadius.circular(6),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: GraftiTheme.primaryPink
-                                                  .withValues(alpha: 0.2),
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Center(
-                                          child: Stack(
-                                            clipBehavior: Clip.none,
-                                            children: [
-                                              Center(
-                                                child: Container(
-                                                  width: 16,
-                                                  height: 20,
-                                                  color: GraftiTheme.secondaryPastelPink,
-                                                ),
-                                              ),
-                                              // Bow loops
-                                              Positioned(
-                                                top: -8,
-                                                left: 16,
-                                                child: Transform.rotate(
-                                                  angle: -math.pi / 4,
-                                                  child: Container(
-                                                    width: 18,
-                                                    height: 11,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: GraftiTheme.secondaryPastelPink,
-                                                        width: 3.5,
-                                                      ),
-                                                      borderRadius: BorderRadius.circular(8),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Positioned(
-                                                top: -8,
-                                                right: 16,
-                                                child: Transform.rotate(
-                                                  angle: math.pi / 4,
-                                                  child: Container(
-                                                    width: 18,
-                                                    height: 11,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: GraftiTheme.secondaryPastelPink,
-                                                        width: 3.5,
-                                                      ),
-                                                      borderRadius: BorderRadius.circular(8),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -351,7 +367,7 @@ class _SplashScreenState extends State<SplashScreen>
                             children: [
                               Image.asset(
                                 'assets/logo.png',
-                                height: 44,
+                                height: 72,
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Text(

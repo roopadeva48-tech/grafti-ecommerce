@@ -121,10 +121,13 @@ class GraftiProvider with ChangeNotifier {
   // Environment Setup
   String get baseUrl {
     if (kIsWeb) {
-      // Use current window origin
+      // In web local development, connect to Next.js dev server on port 3000
+      if (Uri.base.host == 'localhost' || Uri.base.host == '127.0.0.1') {
+        return 'http://${Uri.base.host}:3000';
+      }
       return Uri.base.origin;
     } else {
-      // Android emulator fallback to localhost mapping, iOS to localhost
+      // Android emulator fallback to localhost mapping, iOS/desktop to localhost:3000
       return defaultTargetPlatform == TargetPlatform.android
           ? 'http://10.0.2.2:3000'
           : 'http://localhost:3000';

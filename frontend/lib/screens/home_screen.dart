@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
         scrolledUnderElevation: 0,
         title: Image.asset(
           'assets/logo.png',
-          height: isDesktop ? 38 : 30,
+          height: isDesktop ? 44 : 36,
           fit: BoxFit.contain,
           alignment: Alignment.centerLeft,
           errorBuilder: (context, error, stackTrace) => Text(
